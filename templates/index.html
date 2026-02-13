@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Handwriting OCR</title>
+
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background: #0b1220; }
+    .card { background: #0f1a2e; border: 1px solid rgba(255,255,255,0.08); }
+    .muted { color: rgba(255,255,255,0.70); }
+    .btn-primary { font-weight: 600; }
+    .pill { background: rgba(255,255,255,0.08); padding: .25rem .6rem; border-radius: 999px; }
+  </style>
+</head>
+
+<body class="text-light">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <div class="mb-4">
+          <h1 class="fw-bold">Handwriting OCR</h1>
+          <div class="muted">
+            Upload notebook photos, get a ZIP back with extracted text + JSON + optional debug line boxes.
+          </div>
+        </div>
+
+        <div class="card rounded-4 shadow-sm p-4">
+          <form id="ocrForm" action="/ocr" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Images <span class="pill">up to {{ max_files }}</span></label>
+              <input class="form-control" type="file" name="files" id="files" accept="image/*" multiple required>
+              <div class="form-text muted">
+                Tip: clearer, flatter photos = better OCR. Crooked pages still work, the pipeline tries to warp.
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center mb-3">
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="debug" name="debug" checked>
+                  <label class="form-check-label" for="debug">Include debug images (yellow line boxes)</label>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Max files per request</label>
+                <input class="form-control" type="number" id="max_files" name="max_files" value="{{ max_files }}" min="1" max="500">
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary btn-lg" type="submit" id="submitBtn">
+                Run OCR
+              </button>
+              <button class="btn btn-outline-light btn-lg" type="button" id="clearBtn">
+                Clear
+              </button>
+            </div>
+
+            <div class="mt-4" id="status" style="display:none;">
+              <div class="muted mb-2">Processing… your browser will download a ZIP when ready.</div>
+              <div class="progress" role="progressbar" aria-label="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="muted mt-4 small">
+          Notes:
+          <ul>
+            <li>Output ZIP includes <code>.txt</code>, <code>.json</code>, and optional <code>_debug/*_lines.jpg</code>.</li>
+            <li>Speed: downscales very large images to keep runtime reasonable.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("ocrForm");
+    const status = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const filesInput = document.getElementById("files");
+
+    form.addEventListener("submit", () => {
+      status.style.display = "block";
+      submitBtn.disabled = true;
+      clearBtn.disabled = true;
+    });
+
+    clearBtn.addEventListener("click", () => {
+      filesInput.value = "";
+    });
+  </script>
+</body>
+</html>
