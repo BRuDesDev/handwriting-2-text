@@ -1,11 +1,4 @@
-
-
-### Preprocess phone photo of a notebook page:
-    - convert to grayscale
-    - reduce shadows / uneven lighting
-    - boost contrast
-    - light denoise
-    - optional thresholding
+## Handwritten Notes Converted to Text File
 
 
 Phone photo of lined notebook page → flatten & clean → segment into text lines 
